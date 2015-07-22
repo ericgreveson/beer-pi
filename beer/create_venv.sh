@@ -12,5 +12,5 @@ fi
 source $VENV_DIR/bin/activate
 
 # Install packages
-pip install django gunicorn
+pip install -r requirements.txt
 

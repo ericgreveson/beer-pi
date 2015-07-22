@@ -10,19 +10,24 @@ if [ $UID != 0 ]; then
 fi
 
 echo "Deploying into $INSTALL_PATH..."
-if [ ! -d $INSTALL_PATH ]; then
-  mkdir $INSTALL_PATH
+if [ -d $INSTALL_PATH ]; then
+  echo "Blat existing installation?"
+  read -p "Are you sure? " -n 1 -r
+  if [[ ! $REPLY =~ ^[Yy]$ ]]
+  then
+    exit 1
+  fi
+  rm -rf $INSTALL_PATH
 fi
-
-# Install venv
-cd $INSTALL_PATH
-cp $SRC_PATH/create_venv.sh .
-if [ ! -d venv ]; then
-  source create_venv.sh
-fi
+mkdir $INSTALL_PATH
 
 # Copy Django project
 cp -r $SRC_PATH/beer $INSTALL_PATH
 
-# Fix permissions
+# Install venv
+cd $INSTALL_PATH/beer
+if [ ! -d venv ]; then
+  source create_venv.sh
+fi
 
+# Fix permissions
