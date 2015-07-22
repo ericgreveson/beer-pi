@@ -2,6 +2,8 @@
 
 SRC_PATH=$(dirname $0)
 INSTALL_PATH=/srv/beer
+WWW_USER=www-data
+WWW_GROUP=www-data
 
 # Check we are root
 if [ $UID != 0 ]; then
@@ -22,9 +24,11 @@ ln -s /etc/apache2/sites-available/beer.vhost /etc/apache2/sites-enabled/000-def
 
 # Deploy code and scripts
 echo "Deploying into $INSTALL_PATH..."
-if [ -d $INSTALL_PATH ]; then
-  echo "Blat existing installation?"
-  read -p "Are you sure? " -n 1 -r
+if [ ! -d $INSTALL_PATH ]; then
+  mkdir $INSTALL_PATH
+fi
+if [ -d $INSTALL_PATH/beer ]; then
+  read -p "Blat existing installation?" -n 1 -r
   if [[ ! $REPLY =~ ^[Yy]$ ]]
   then
     exit 1
@@ -43,6 +47,8 @@ if [ ! -d venv ]; then
 fi
 
 # Fix permissions
+chown -R $WWW_USER:$WWW_GROUP $INSTALL_PATH
+chmod -R g+s $INSTALL_PATH
 
 # Enable the site
 service apache2 start
