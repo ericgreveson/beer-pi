@@ -22,3 +22,7 @@ if [ ! -d venv ]; then
 fi
 
 # Copy Django project
+cp -r $SRC_PATH/beer $INSTALL_PATH
+
+# Fix permissions
+
