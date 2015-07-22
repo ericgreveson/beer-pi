@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SRC_PATH=$(dirname $0)
-INSTALL_PATH=/srv/beer-pi
+INSTALL_PATH=/srv/beer
 
 # Check we are root
 if [ $UID != 0 ]; then
@@ -9,6 +9,18 @@ if [ $UID != 0 ]; then
   exit 1
 fi
 
+# Stop webserver if running
+service apache2 stop
+
+# Install prerequisites
+source $SRC_PATH/scripts/prerequisites.sh
+
+# Deploy webserver settings
+cp scripts/beer.vhost /etc/apache2/sites-available/
+rm -f /etc/apache2/sites-enabled/000-default
+ln -s /etc/apache2/sites-available/beer.vhost /etc/apache2/sites-enabled/000-default
+
+# Deploy code and scripts
 echo "Deploying into $INSTALL_PATH..."
 if [ -d $INSTALL_PATH ]; then
   echo "Blat existing installation?"
@@ -22,12 +34,15 @@ fi
 mkdir $INSTALL_PATH
 
 # Copy Django project
-cp -r $SRC_PATH/beer $INSTALL_PATH
+cp -r $SRC_PATH/beer/* $INSTALL_PATH
 
 # Install venv
-cd $INSTALL_PATH/beer
+cd $INSTALL_PATH
 if [ ! -d venv ]; then
   source create_venv.sh
 fi
 
 # Fix permissions
+
+# Enable the site
+service apache2 start

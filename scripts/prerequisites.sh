@@ -5,5 +5,4 @@ if [ $UID != 0 ]; then
   exit 1
 fi
 
-apt-get install python-virtualenv nginx
-
+apt-get install python-virtualenv apache2 libapache2-mod-wsgi-py3

@@ -1,0 +1,15 @@
+<VirtualHost *:80>
+
+  WSGIDaemonProcess eric-pi python-path=/srv/beer:/srv/beer/venv/lib/python3.2/site-packages
+  WSGIProcessGroup eric-pi
+
+  WSGIScriptAlias / /srv/beer/beer/wsgi.py
+
+  <Directory /srv/beer/beer>
+    <Files wsgi.py>
+      Order allow,deny
+      Allow from all
+    </Files>
+  </Directory>
+
+</VirtualHost>
