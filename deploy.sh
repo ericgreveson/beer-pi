@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SRC_PATH=$(dirname $0)
-INSTALL_PATH=/srv/beer
+SRC_PATH=$(dirname $(readlink -f $0))
+INSTALL_PATH=/var/www/beer
 WWW_USER=www-data
 WWW_GROUP=www-data
 
@@ -17,38 +17,49 @@ service apache2 stop
 # Install prerequisites
 source $SRC_PATH/scripts/prerequisites.sh
 
-# Deploy webserver settings
+# Deploy webserver settings (and set correct path)
 cp scripts/beer.vhost /etc/apache2/sites-available/
+sed -i "s|@INSTALL_PATH@|${INSTALL_PATH}|g" /etc/apache2/sites-available/beer.vhost
 rm -f /etc/apache2/sites-enabled/000-default
 ln -s /etc/apache2/sites-available/beer.vhost /etc/apache2/sites-enabled/000-default
 
 # Deploy code and scripts
 echo "Deploying into $INSTALL_PATH..."
-if [ ! -d $INSTALL_PATH ]; then
-  mkdir $INSTALL_PATH
-fi
-if [ -d $INSTALL_PATH/beer ]; then
-  read -p "Blat existing installation?" -n 1 -r
-  if [[ ! $REPLY =~ ^[Yy]$ ]]
-  then
-    exit 1
+FRESH_INSTALL=1
+if [ -d $INSTALL_PATH ]; then
+  read -p "Completely blat existing installation and its venv? " -n 1 -r
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    rm -rf $INSTALL_PATH
+  else
+    FRESH_INSTALL=0
   fi
-  rm -rf $INSTALL_PATH
 fi
-mkdir $INSTALL_PATH
+
+INSTALL_VENV=0
+if [ $FRESH_INSTALL -eq 1 ]; then
+  # Create from scratch
+  echo "Creating fresh install in $INSTALL_PATH..."
+  mkdir $INSTALL_PATH
+  chmod g+s $INSTALL_PATH
+  INSTALL_VENV=1
+else
+  # Delete everything but the venv (takes forever to copy)
+  echo "Removing old project files but leaving the venv in $INSTALL_PATH...."
+  cd $INSTALL_PATH
+  rm -rf $(ls * | grep -v venv)
+fi
 
 # Copy Django project
 cp -r $SRC_PATH/beer/* $INSTALL_PATH
 
-# Install venv
-cd $INSTALL_PATH
-if [ ! -d venv ]; then
-  source create_venv.sh
+if [ $INSTALL_VENV -eq 1 ]; then
+  # Install venv
+  cd $INSTALL_PATH
+  source ./create_venv.sh
 fi
 
 # Fix permissions
 chown -R $WWW_USER:$WWW_GROUP $INSTALL_PATH
-chmod -R g+s $INSTALL_PATH
 
-# Enable the site
+# Enable the server
 service apache2 start
