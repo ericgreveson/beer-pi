@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Beer-device simulator</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.2.3/backbone-min.js"></script>
+  <link rel="stylesheet" href="css/sim.css" />
+  <script src="js/sim.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="jumbotron">
+      <h1>Beer!</h1>
+      <p>Simulated brewing for your viewing pleasure</p>
+    </div>
+
+    <div class="system_diagram">
+      <div class="fridge">
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="center-block">
+        <svg class="center-block" xmlns="http://www.w3.org/2000/svg" viewBox="-100 -46 200 92">
+
+          <defs>
+            <g id="temp">
+              <circle cx="0" cy="0" r="6" fill="white" stroke="red" stroke-width="0.5" />
+              <image x="-5" y="-5" width="10" height="10" xlink:href="img/thermometer.png" />
+            </g>
+          </defs>
+
+          <image x="-40" y="-40" width="80" height="80" xlink:href="img/fridge.png" />
+          <image x="-20" y="-20" width="40" height="40" xlink:href="img/pintglass.gif" />
+          <use x="-60" y="-30" xlink:href="#temp" />
+          <use x="-30" y="10" xlink:href="#temp" />
+          <use x="0" y="0" xlink:href="#temp" />
+        </svg>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <label for="min_per_sec">Play speed (minutes per second):</label>
+        <input id="min_per_sec" type="number" value="60" />
+        <button type="button" class="btn btn-default btn-lg">
+          <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="btn btn-default btn-lg">
+          <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
